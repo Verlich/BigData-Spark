@@ -1,0 +1,1 @@
+~/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:2181 -topic final-lab-topic --from-beginning
