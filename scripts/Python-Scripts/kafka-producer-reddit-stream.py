@@ -1,14 +1,15 @@
 from json import dumps
+import json
 import praw
 from kafka import KafkaProducer
 import time
+from datetime import datetime
 
-data ={'Test sending data': 'value sent'}
 producer = KafkaProducer(bootstrap_servers=['localhost:9092'],
                          value_serializer=lambda x:
                          dumps(x).encode('utf-8'))
 
-producer.send('final-lab-topic', value=data)
+file = open("reddit-data.json", "a")
 
 secretKey = "Zj4X5Pv1aC-gFWYlk6CaJWSYyTc"
 publicKey = "YQA1Qb-lfTEnzw"
@@ -26,9 +27,9 @@ for submission in reddit.subreddit('all').stream.submissions():
     except:
         li2 = dumps([])
     data = {'author': str(submission.author),
-            'name': submission.name,
+            'name': submission.title,
             'id': submission.id,
-            'time-created': submission.created_utc,
+            'time-created': time.strftime("%D %H:%M", time.localtime(int(submission.created_utc))),
             'locked': submission.locked,
             'comments': li2,
             'is_original_content': submission.is_original_content,
@@ -37,8 +38,10 @@ for submission in reddit.subreddit('all').stream.submissions():
             'upvote_ratio': submission.upvote_ratio
            }
     print(data)
+    json.dump(data, file)
+    file.write('\n')
     producer.send('final-lab-topic', value=data)
-    time.sleep(1)
+    time.sleep(1.5)
 
 
 

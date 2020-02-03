@@ -1,6 +1,7 @@
 from pyspark.streaming.kafka import KafkaUtils
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
+from json import dumps
 import os
 
 os.environ['PYSPARK_PYTHON'] = 'python3'
