@@ -1,6 +1,7 @@
 from pyspark.streaming.kafka import KafkaUtils
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
+from json import dumps
 import os
 
 os.environ['PYSPARK_PYTHON'] = 'python3'
@@ -14,5 +15,7 @@ data = KafkaUtils.createDirectStream(ssc, ['final-lab-topic'], kafkaParams)
 
 lines = data.map(lambda x: x[1])
 lines.pprint()
+# TO DO:
+# Write a machine learning model to get use of the data
 ssc.start()
 ssc.awaitTermination()
