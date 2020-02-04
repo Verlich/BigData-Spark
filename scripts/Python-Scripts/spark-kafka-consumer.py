@@ -15,5 +15,7 @@ data = KafkaUtils.createDirectStream(ssc, ['final-lab-topic'], kafkaParams)
 
 lines = data.map(lambda x: x[1])
 lines.pprint()
+# TO DO:
+# Write a machine learning model to get use of the data
 ssc.start()
 ssc.awaitTermination()
