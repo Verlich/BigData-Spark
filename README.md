@@ -15,7 +15,7 @@ Praw
 
 The data source we are using to get the data is Reddit using the Praw Python module, then we stream this data on Kafka on localhost onto topic final-lab-topic.
 
-Second tier componentsm, we have two Kafka consumers currently that listen onto this topic:
+Second tier component, we have two Kafka consumers currently that listen onto this topic:
 1) Java Consumer: reads the streamed data using kafka and spark, then add them to the database using spark SQL.
 This must be a different machine and must have the following installed:
 A) Hbase
