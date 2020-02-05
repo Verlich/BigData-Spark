@@ -33,3 +33,5 @@ Install Jupiyter notebook, pandas, plotly, matplotlib before running this one.
 
 TO DO:
 In the data visualization phase, make the code read directly from the remote machine that hosts hive/hbase on it, and use spark sql to read it instead of reading a local file.
+
+In the Python Kafka consumer, implement a way to find most common categories people are talking about and use it for data visualization.
