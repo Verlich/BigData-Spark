@@ -30,3 +30,6 @@ Install pyspark before running this one.
 3)Data visualization: Currently reads the data from the json file produced by the python producer, in the future it will read the data directly from Hbase that is hosted on another machine.
 
 Install Jupiyter notebook, pandas, plotly, matplotlib before running this one.
+
+TO DO:
+In the data visualization phase, make the code read directly from the remote machine that hosts hive/hbase on it, and use spark sql to read it instead of reading a local file.
