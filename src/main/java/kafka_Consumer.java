@@ -1,29 +1,32 @@
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+        import com.google.gson.JsonElement;
+        import com.google.gson.JsonObject;
+        import com.google.gson.JsonParser;
+        import org.apache.kafka.clients.consumer.ConsumerConfig;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
+        import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+        import java.io.IOException;
+        import java.util.*;
 
-import org.apache.spark.SparkConf;
-import org.apache.spark.streaming.Durations;
-import org.apache.spark.streaming.api.java.JavaDStream;
-import org.apache.spark.streaming.api.java.JavaInputDStream;
-import org.apache.spark.streaming.api.java.JavaPairDStream;
-import org.apache.spark.streaming.api.java.JavaStreamingContext;
-import org.apache.spark.streaming.kafka010.ConsumerStrategies;
-import org.apache.spark.streaming.kafka010.KafkaUtils;
-import org.apache.spark.streaming.kafka010.LocationStrategies;
-import scala.Tuple2;
+        import org.apache.spark.SparkConf;
+        import org.apache.spark.api.java.JavaRDD;
+        import org.apache.spark.api.java.function.VoidFunction;
+        import org.apache.spark.streaming.Durations;
+        import org.apache.spark.streaming.api.java.JavaDStream;
+        import org.apache.spark.streaming.api.java.JavaInputDStream;
+        import org.apache.spark.streaming.api.java.JavaPairDStream;
+        import org.apache.spark.streaming.api.java.JavaStreamingContext;
+        import org.apache.spark.streaming.kafka010.ConsumerStrategies;
+        import org.apache.spark.streaming.kafka010.KafkaUtils;
+        import org.apache.spark.streaming.kafka010.LocationStrategies;
+        import scala.Tuple2;
 
 
 
 public class kafka_Consumer {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         kafka_Consumer c = new kafka_Consumer();
         c.display();
     }
@@ -34,7 +37,7 @@ public class kafka_Consumer {
         // Configure Spark to connect to Kafka running on local machine
 
         Map<String, Object> kafkaParams = new HashMap<>();
-        kafkaParams.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,"localhost:9092");
+        kafkaParams.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,"10.10.14.111:9092");
         kafkaParams.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
                 "org.apache.kafka.common.serialization.StringDeserializer");
         kafkaParams.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
@@ -49,7 +52,7 @@ public class kafka_Consumer {
         SparkConf conf = new SparkConf().setMaster("local[1]").setAppName("kafka_Consumer");
 
         //Read messages in batch of 50 seconds
-        JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(50));
+        JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(10));
 
         // Start reading messages from Kafka and get DStream
         final JavaInputDStream<ConsumerRecord<String, String>> stream =
@@ -70,6 +73,16 @@ public class kafka_Consumer {
         JavaDStream<Long> count = lines.count();
         // Get the lines, split them into words, count the words and print
 
+        lines.foreachRDD(new VoidFunction<JavaRDD<String>>() {
+            @Override
+            public void call(JavaRDD<String> stringJavaRDD) throws Exception {
+                List<String> list = stringJavaRDD.collect();
+
+                for(String string : list) {
+                   if(string != null) DBConnector.InsertIntoDB(string);
+                }
+            }
+        });
 
         lines.print();
 
@@ -80,6 +93,10 @@ public class kafka_Consumer {
 
         jssc.start();
         jssc.awaitTermination();
+
+
     }
 
 }
+
+
